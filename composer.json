@@ -1,0 +1,37 @@
+{
+    "name": "urlcv/focus-planner",
+    "description": "A focused daily planner with drag-and-drop tasks, adjustable work hours, and a built-in Pomodoro timer. No login needed — just enter your email.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": ["pomodoro", "focus", "productivity", "planner", "task-manager", "time-management", "today", "drag-and-drop"],
+    "homepage": "https://urlcv.com/tools/focus-planner",
+    "authors": [
+        {
+            "name": "URLCV",
+            "homepage": "https://urlcv.com"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "illuminate/support": "^10|^11|^12",
+        "illuminate/database": "^10|^11|^12",
+        "illuminate/mail": "^10|^11|^12"
+    },
+    "autoload": {
+        "psr-4": {
+            "URLCV\\FocusPlanner\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "URLCV\\FocusPlanner\\Laravel\\FocusPlannerServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
+    "minimum-stability": "stable"
+}
