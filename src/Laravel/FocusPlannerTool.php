@@ -20,7 +20,7 @@ class FocusPlannerTool implements ToolInterface
 
     public function summary(): string
     {
-        return 'Plan your day with drag-and-drop tasks, custom headers, and a built-in Pomodoro timer — no login needed.';
+        return 'The only free daily planner that pairs Things 3-style project organisation with a built-in Pomodoro timer, focus mode, task notes, and drag-to-queue sessions — saved to your email, no account needed.';
     }
 
     public function descriptionMd(): ?string
@@ -28,25 +28,92 @@ class FocusPlannerTool implements ToolInterface
         return <<<'MD'
 ## Focus Planner
 
-A clean daily planner inspired by the best parts of task managers like Things 3 — with two things they're missing: **Pomodoro timers** and **flexible today headers**.
+A distraction-free daily planner with a built-in Pomodoro timer, drag-and-drop task management, and project organisation — all saved to your email with no account or login required.
 
-### What you can do
+---
 
-- **Organise your day** — add tasks and section headers, then drag them into the order that fits your day
-- **Set your work hours** — configure your working day (e.g. 9 AM–5 PM) to see how much time remains
-- **Run Pomodoro sessions** — select tasks, set your timer durations, and work through them with short and long breaks
-- **No login** — just enter your email to save your planner. Revisit from any device by requesting a recovery link.
+### Tasks
 
-### How the Pomodoro timer works
+- **Add tasks** — click **+ Add task** at the bottom of the list. Tasks auto-save to the server when you finish typing.
+- **Add section headers** — click **+ Add header** to group tasks under a label (e.g. "Morning", "Deep Work").
+- **Complete a task** — click the circle checkbox on any task row. Completed tasks are struck through.
+- **Drag to reorder** — grab the ⠿ handle on the left of any row and drag it to a new position. Order is saved automatically.
+- **Task details** — hover a task row and click the **›** arrow on the right to open the detail panel. From there you can:
+  - Edit the task title
+  - Add **notes** — multi-line text for links, context, or sub-steps
+  - Reassign to a project
+  - Set a scheduled date
+  - Adjust the Pomodoro estimate
+  - Delete the task
 
-1. Add tasks to your today list
-2. Click **Start Pomodoro** and select which tasks to include
-3. The timer runs 25-minute work blocks (adjustable) with 5-minute short breaks and a 15-minute long break every 4 sessions
-4. Check off tasks as you complete them
+---
 
-### Saving your planner
+### Projects
 
-Your tasks are synced to the server when you provide an email address. Enter your email at any time — if you already have a planner, we'll send a recovery link to your inbox.
+Click the **All Projects ▾** dropdown in the nav bar to manage projects:
+
+- **Filter tasks** — select a project to show only its tasks, or **Inbox** for unassigned tasks
+- **Create a project** — click **New project** at the bottom of the dropdown, choose a colour, type a name and press Enter
+- **Assign a task** — open the **›** task detail panel and pick a project, or hover any task and click the coloured dot to assign inline
+- **Delete a project** — hover a project name in the dropdown and click **×**. Tasks move to Inbox automatically.
+- **Search** — type in the search box at the top of the dropdown to filter across hundreds of projects instantly
+
+---
+
+### Scheduling ahead
+
+- **Schedule a task for a future date** — hover a task and click the 📅 calendar icon, then pick a date. The task disappears from Today and appears in **Upcoming**.
+- **Upcoming view** — click the **Upcoming** pill in the nav to see all future-dated tasks grouped by date.
+- **Move back to today** — in Upcoming view, hover a task and click the ↩ return arrow to unschedule it.
+
+---
+
+### Pomodoro timer
+
+Click **🍅 Pomodoro** in the top bar to open the timer panel.
+
+**Building your queue:**
+- Hover any task and click the 🕐 clock icon to add it to the queue, or simply **drag a task from the list and drop it onto the queue panel**.
+- Reorder queue items by dragging them up or down within the queue.
+- Remove a task from the queue with the × button.
+
+**Running a session:**
+1. Add tasks to the queue
+2. Click **Start** — the timer counts down your focus block (default 25 min)
+3. When the session ends a chime plays and the timer switches to a short break (5 min) or long break (15 min) after every 4 sessions
+4. The session dots below the timer track your progress toward the next long break
+5. Click **Skip** to advance to the next phase early, or **Reset** to start fresh
+
+**Marking tasks complete:**
+- Click the small circle next to any queue item to mark it done without leaving the timer view.
+
+**Focus mode:**
+- Click the ⛶ expand icon in the timer controls to enter **Focus mode** — a full-screen dark overlay showing only the large timer, the current task, and your queue. Press **Esc** or click ⛶ again to exit.
+
+---
+
+### Settings
+
+Click ⚙ in the top bar to adjust:
+
+| Setting | Default |
+|---|---|
+| Work start / end | 09:00 – 17:00 |
+| Focus duration | 25 min |
+| Short break | 5 min |
+| Long break | 15 min |
+| Sessions until long break | 4 |
+
+Changes take effect immediately (the timer resets to the new duration if not currently running).
+
+---
+
+### Saving & recovery
+
+Your planner is tied to your email address — no password needed.
+
+- **New device or browser** — go to the tool, enter your email, and click **Get my planner →**. If a planner already exists for that email, a recovery link is sent to your inbox.
+- **Sign out** — open ⚙ Settings and click **Sign out and clear local data**.
 MD;
     }
 

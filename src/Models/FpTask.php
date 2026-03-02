@@ -13,12 +13,15 @@ class FpTask extends Model
 
     protected $fillable = [
         'session_id',
+        'project_id',
         'type',
         'title',
+        'notes',
         'completed',
         'sort_order',
         'estimated_pomodoros',
         'completed_pomodoros',
+        'scheduled_for',
     ];
 
     protected $casts = [
@@ -26,6 +29,7 @@ class FpTask extends Model
         'sort_order'          => 'integer',
         'estimated_pomodoros' => 'integer',
         'completed_pomodoros' => 'integer',
+        'scheduled_for'       => 'date',
     ];
 
     public function session(): BelongsTo

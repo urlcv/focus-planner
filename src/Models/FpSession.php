@@ -25,4 +25,9 @@ class FpSession extends Model
     {
         return $this->hasMany(FpTask::class, 'session_id')->orderBy('sort_order');
     }
+
+    public function projects(): HasMany
+    {
+        return $this->hasMany(FpProject::class, 'session_id')->orderBy('sort_order');
+    }
 }
