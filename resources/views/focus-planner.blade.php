@@ -565,110 +565,112 @@
             </div>
         </div>
 
-    </div>{{-- /planner --}}
+        {{-- ══════════════════════════════════════════════════
+             FOCUS MODE — lives INSIDE the planner div so it
+             shares the same stacking context whether the tool
+             is in its own fullscreen mode or not.
+        ══════════════════════════════════════════════════ --}}
+        <div x-show="pomoFocus" x-cloak
+            @keydown.escape.window="pomoFocus = false"
+            class="fixed inset-0 z-[10000] bg-gray-950 flex flex-col items-center justify-center gap-7 p-8 overflow-y-auto">
 
-    {{-- ══════════════════════════════════════════════════
-         FOCUS MODE — full-screen Pomodoro overlay
-    ══════════════════════════════════════════════════ --}}
-    <div x-show="pomoFocus" x-cloak
-        @keydown.escape.window="pomoFocus = false"
-        class="fixed inset-0 z-[200] bg-gray-950 flex flex-col items-center justify-center gap-7 p-8 overflow-y-auto">
+            {{-- Exit button --}}
+            <button @click="pomoFocus = false"
+                class="absolute top-5 right-5 p-2 rounded-lg text-gray-600 hover:text-white hover:bg-white/10 transition-colors"
+                title="Exit focus mode (Esc)">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 9V4H4v5h5zm0 0L4 4m11 5h5V4h-5v5zm0 0l5-5M9 15H4v5h5v-5zm0 0l-5 5m11-5v5h5v-5h-5zm0 0l5 5"/></svg>
+            </button>
 
-        {{-- Exit button --}}
-        <button @click="pomoFocus = false"
-            class="absolute top-5 right-5 p-2 rounded-lg text-gray-600 hover:text-white hover:bg-white/10 transition-colors"
-            title="Exit focus mode (Esc)">
-            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 9V4H4v5h5zm0 0L4 4m11 5h5V4h-5v5zm0 0l5-5M9 15H4v5h5v-5zm0 0l-5 5m11-5v5h5v-5h-5zm0 0l5 5"/></svg>
-        </button>
+            {{-- Big timer ring --}}
+            <div class="relative w-52 h-52 sm:w-64 sm:h-64 flex-shrink-0">
+                <svg viewBox="0 0 100 100" class="w-full h-full -rotate-90">
+                    <circle cx="50" cy="50" r="42" fill="none" stroke-width="5" stroke="#1f2937"/>
+                    <circle cx="50" cy="50" r="42" fill="none" stroke-width="5"
+                        :class="{ 'fp-phase-work': pomoPhase==='work', 'fp-phase-short': pomoPhase==='short_break', 'fp-phase-long': pomoPhase==='long_break' }"
+                        :stroke-dasharray="2 * Math.PI * 42"
+                        :stroke-dashoffset="ringOffset"
+                        stroke-linecap="round"/>
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center gap-1.5">
+                    <span class="text-5xl sm:text-6xl font-bold tabular-nums text-white leading-none" x-text="formatTime(pomoTimeLeft)"></span>
+                    <span class="text-xs font-semibold uppercase tracking-widest"
+                        :class="{ 'text-primary-400': pomoPhase==='work', 'text-emerald-400': pomoPhase==='short_break', 'text-violet-400': pomoPhase==='long_break' }"
+                        x-text="pomoPhase==='work' ? 'Focus' : pomoPhase==='short_break' ? 'Short break' : 'Long break'">
+                    </span>
+                </div>
+            </div>
 
-        {{-- Big timer ring --}}
-        <div class="relative w-52 h-52 sm:w-64 sm:h-64 flex-shrink-0">
-            <svg viewBox="0 0 100 100" class="w-full h-full -rotate-90">
-                <circle cx="50" cy="50" r="42" fill="none" stroke-width="5" stroke="#1f2937"/>
-                <circle cx="50" cy="50" r="42" fill="none" stroke-width="5"
-                    :class="{ 'fp-phase-work': pomoPhase==='work', 'fp-phase-short': pomoPhase==='short_break', 'fp-phase-long': pomoPhase==='long_break' }"
-                    :stroke-dasharray="2 * Math.PI * 42"
-                    :stroke-dashoffset="ringOffset"
-                    stroke-linecap="round"/>
-            </svg>
-            <div class="absolute inset-0 flex flex-col items-center justify-center gap-1.5">
-                <span class="text-5xl sm:text-6xl font-bold tabular-nums text-white leading-none" x-text="formatTime(pomoTimeLeft)"></span>
-                <span class="text-xs font-semibold uppercase tracking-widest"
-                    :class="{ 'text-primary-400': pomoPhase==='work', 'text-emerald-400': pomoPhase==='short_break', 'text-violet-400': pomoPhase==='long_break' }"
-                    x-text="pomoPhase==='work' ? 'Focus' : pomoPhase==='short_break' ? 'Short break' : 'Long break'">
-                </span>
+            {{-- Session dots --}}
+            <div class="flex items-center gap-2">
+                <template x-for="i in settings.sessionsUntilLongBreak" :key="i">
+                    <div class="w-2.5 h-2.5 rounded-full transition-colors"
+                        :class="(pomoSessionsDone % settings.sessionsUntilLongBreak) >= i ? 'bg-primary-500' : 'bg-gray-800'">
+                    </div>
+                </template>
+            </div>
+
+            {{-- Controls --}}
+            <div class="flex items-center gap-3">
+                <button @click="resetPomo()" title="Reset"
+                    class="p-2.5 rounded-xl border border-gray-800 hover:border-gray-600 text-gray-500 hover:text-white transition-colors">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                </button>
+                <button @click="togglePomo()"
+                    class="px-10 py-3 rounded-xl font-bold text-base transition-colors"
+                    :class="pomoRunning ? 'bg-red-900/50 text-red-300 hover:bg-red-900/80' : 'bg-primary-600 text-white hover:bg-primary-700'">
+                    <span x-text="pomoRunning ? 'Pause' : 'Start'"></span>
+                </button>
+                <button @click="skipPhase()" title="Skip phase"
+                    class="p-2.5 rounded-xl border border-gray-800 hover:border-gray-600 text-gray-500 hover:text-white transition-colors">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </button>
+            </div>
+
+            {{-- Current task (work phase) --}}
+            <div x-show="pomodoroQueue.length > 0 && pomoPhase === 'work'" class="text-center max-w-lg px-4">
+                <p class="text-xs text-gray-600 uppercase tracking-widest mb-2">Now focusing on</p>
+                <p class="text-2xl sm:text-3xl font-semibold text-white leading-snug"
+                    x-text="getTaskById(pomodoroQueue[currentPomoIndex])?.title || '(untitled)'"></p>
+                <p class="text-xs text-gray-600 mt-2 tabular-nums"
+                    x-show="(getTaskById(pomodoroQueue[currentPomoIndex])?.estimated_pomodoros ?? 0) > 1"
+                    x-text="(getTaskById(pomodoroQueue[currentPomoIndex])?.completed_pomodoros ?? 0) + ' of ' + (getTaskById(pomodoroQueue[currentPomoIndex])?.estimated_pomodoros ?? 1) + ' pomodoros done'">
+                </p>
+            </div>
+
+            {{-- Break message --}}
+            <div x-show="pomoPhase !== 'work'" class="text-center">
+                <p class="text-xl font-semibold"
+                    :class="pomoPhase === 'short_break' ? 'text-emerald-400' : 'text-violet-400'"
+                    x-text="pomoPhase === 'short_break' ? 'Take a short break ☕' : 'Long break — you earned it 🌿'"></p>
+            </div>
+
+            {{-- Queue --}}
+            <div x-show="pomodoroQueue.length > 0" class="w-full max-w-xs space-y-1">
+                <p class="text-[10px] text-gray-700 uppercase tracking-widest text-center mb-2">Queue</p>
+                <template x-for="(taskId, qIdx) in pomodoroQueue" :key="taskId">
+                    <div class="flex items-center gap-3 px-3 py-2 rounded-lg transition-all"
+                        :class="qIdx === currentPomoIndex && pomoPhase === 'work' ? 'bg-white/10' : ''">
+                        <button @click="markDoneInQueue(taskId)"
+                            class="w-4 h-4 rounded-full border-2 flex-shrink-0 transition-all"
+                            :class="getTaskById(taskId)?.completed ? 'bg-primary-500 border-primary-500' : 'border-gray-600 hover:border-primary-500'">
+                        </button>
+                        <span class="text-sm flex-1 truncate"
+                            :class="getTaskById(taskId)?.completed ? 'line-through text-gray-600' : 'text-gray-300'"
+                            x-text="getTaskById(taskId)?.title || '(deleted)'"></span>
+                        <span class="text-[10px] text-gray-600 flex-shrink-0 tabular-nums"
+                            x-show="(getTaskById(taskId)?.estimated_pomodoros ?? 0) > 0"
+                            x-text="(getTaskById(taskId)?.completed_pomodoros ?? 0) + '/' + (getTaskById(taskId)?.estimated_pomodoros ?? 1) + '🍅'"></span>
+                    </div>
+                </template>
+            </div>
+
+            {{-- Empty queue hint --}}
+            <div x-show="pomodoroQueue.length === 0" class="text-center text-gray-600 text-sm">
+                Add tasks to the Pomodoro queue to begin a focus session
             </div>
         </div>
 
-        {{-- Session dots --}}
-        <div class="flex items-center gap-2">
-            <template x-for="i in settings.sessionsUntilLongBreak" :key="i">
-                <div class="w-2.5 h-2.5 rounded-full transition-colors"
-                    :class="(pomoSessionsDone % settings.sessionsUntilLongBreak) >= i ? 'bg-primary-500' : 'bg-gray-800'">
-                </div>
-            </template>
-        </div>
-
-        {{-- Controls --}}
-        <div class="flex items-center gap-3">
-            <button @click="resetPomo()" title="Reset"
-                class="p-2.5 rounded-xl border border-gray-800 hover:border-gray-600 text-gray-500 hover:text-white transition-colors">
-                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-            </button>
-            <button @click="togglePomo()"
-                class="px-10 py-3 rounded-xl font-bold text-base transition-colors"
-                :class="pomoRunning ? 'bg-red-900/50 text-red-300 hover:bg-red-900/80' : 'bg-primary-600 text-white hover:bg-primary-700'">
-                <span x-text="pomoRunning ? 'Pause' : 'Start'"></span>
-            </button>
-            <button @click="skipPhase()" title="Skip phase"
-                class="p-2.5 rounded-xl border border-gray-800 hover:border-gray-600 text-gray-500 hover:text-white transition-colors">
-                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-            </button>
-        </div>
-
-        {{-- Current task (work phase) --}}
-        <div x-show="pomodoroQueue.length > 0 && pomoPhase === 'work'" class="text-center max-w-lg px-4">
-            <p class="text-xs text-gray-600 uppercase tracking-widest mb-2">Now focusing on</p>
-            <p class="text-2xl sm:text-3xl font-semibold text-white leading-snug"
-                x-text="getTaskById(pomodoroQueue[currentPomoIndex])?.title || '(untitled)'"></p>
-            <p class="text-xs text-gray-600 mt-2 tabular-nums"
-                x-show="(getTaskById(pomodoroQueue[currentPomoIndex])?.estimated_pomodoros ?? 0) > 1"
-                x-text="(getTaskById(pomodoroQueue[currentPomoIndex])?.completed_pomodoros ?? 0) + ' of ' + (getTaskById(pomodoroQueue[currentPomoIndex])?.estimated_pomodoros ?? 1) + ' pomodoros done'">
-            </p>
-        </div>
-
-        {{-- Break message --}}
-        <div x-show="pomoPhase !== 'work'" class="text-center">
-            <p class="text-xl font-semibold"
-                :class="pomoPhase === 'short_break' ? 'text-emerald-400' : 'text-violet-400'"
-                x-text="pomoPhase === 'short_break' ? 'Take a short break ☕' : 'Long break — you earned it 🌿'"></p>
-        </div>
-
-        {{-- Queue --}}
-        <div x-show="pomodoroQueue.length > 0" class="w-full max-w-xs space-y-1">
-            <p class="text-[10px] text-gray-700 uppercase tracking-widest text-center mb-2">Queue</p>
-            <template x-for="(taskId, qIdx) in pomodoroQueue" :key="taskId">
-                <div class="flex items-center gap-3 px-3 py-2 rounded-lg transition-all"
-                    :class="qIdx === currentPomoIndex && pomoPhase === 'work' ? 'bg-white/10' : ''">
-                    <button @click="markDoneInQueue(taskId)"
-                        class="w-4 h-4 rounded-full border-2 flex-shrink-0 transition-all"
-                        :class="getTaskById(taskId)?.completed ? 'bg-primary-500 border-primary-500' : 'border-gray-600 hover:border-primary-500'">
-                    </button>
-                    <span class="text-sm flex-1 truncate"
-                        :class="getTaskById(taskId)?.completed ? 'line-through text-gray-600' : 'text-gray-300'"
-                        x-text="getTaskById(taskId)?.title || '(deleted)'"></span>
-                    <span class="text-[10px] text-gray-600 flex-shrink-0 tabular-nums"
-                        x-show="(getTaskById(taskId)?.estimated_pomodoros ?? 0) > 0"
-                        x-text="(getTaskById(taskId)?.completed_pomodoros ?? 0) + '/' + (getTaskById(taskId)?.estimated_pomodoros ?? 1) + '🍅'"></span>
-                </div>
-            </template>
-        </div>
-
-        {{-- Empty queue hint --}}
-        <div x-show="pomodoroQueue.length === 0" class="text-center text-gray-600 text-sm">
-            Add tasks to the Pomodoro queue to begin a focus session
-        </div>
-    </div>
+    </div>{{-- /planner --}}
 
     {{-- ══════════════════════════════════════════════════
          SETTINGS MODAL
